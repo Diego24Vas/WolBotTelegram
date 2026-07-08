@@ -5,7 +5,7 @@ from config import settings
 from database.db import init_db
 from handlers.start import start
 from handlers.servers import servers_list, server_status, server_wake
-from handlers.admin import add_server, remove_server, add_user, remove_user
+from handlers.admin import add_server, remove_server, add_user, remove_user, server_info
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -37,6 +37,7 @@ def main():
     app.add_handler(CommandHandler("remove", remove_server))
     app.add_handler(CommandHandler("adduser", add_user))
     app.add_handler(CommandHandler("removeuser", remove_user))
+    app.add_handler(CommandHandler("info", server_info))
 
     logger.info("Bot iniciado...")
     app.run_polling(allowed_updates=["message"])

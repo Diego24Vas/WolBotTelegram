@@ -94,3 +94,24 @@ async def remove_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await eliminar_usuario_async(user_id)
     await update.message.reply_text(f"Usuario {user_id} eliminado.")
     await registrar_log_async(update.effective_user.id, "/removeuser", str(user_id))
+
+
+@authorized_only(min_rol="admin")
+async def server_info(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not context.args:
+        await update.message.reply_text("Uso: /info <nombre del servidor>")
+        return
+
+    nombre = " ".join(context.args)
+    srv = await obtener_servidor_async(nombre)
+    if not srv:
+        await update.message.reply_text(f"Servidor '{nombre}' no encontrado.")
+        return
+
+    await update.message.reply_text(
+        f"{srv['nombre']}\n"
+        f"MAC: {srv['mac']}\n"
+        f"IP: {srv['ip']}\n"
+        f"Puerto WoL: {srv['puerto']}"
+    )
+    await registrar_log_async(update.effective_user.id, "/info", nombre)
