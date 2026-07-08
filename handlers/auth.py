@@ -2,7 +2,7 @@ from functools import wraps
 from telegram import Update
 from telegram.ext import ContextTypes
 
-from database.repository import obtener_usuario
+from database.repository import obtener_usuario_async
 
 
 def authorized_only(min_rol: str = "user"):
@@ -13,7 +13,7 @@ def authorized_only(min_rol: str = "user"):
             if not user:
                 return None
 
-            db_user = obtener_usuario(user.id)
+            db_user = await obtener_usuario_async(user.id)
 
             if db_user is None:
                 await update.message.reply_text(

@@ -2,15 +2,15 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from handlers.auth import authorized_only
 from database.repository import (
-    agregar_servidor,
-    eliminar_servidor,
-    obtener_servidor,
-    registrar_usuario,
-    actualizar_rol_usuario,
-    eliminar_usuario,
-    obtener_usuario,
-    listar_usuarios,
-    registrar_log,
+    agregar_servidor_async,
+    eliminar_servidor_async,
+    obtener_servidor_async,
+    registrar_usuario_async,
+    actualizar_rol_usuario_async,
+    eliminar_usuario_async,
+    obtener_usuario_async,
+    listar_usuarios_async,
+    registrar_log_async,
 )
 
 
@@ -28,13 +28,13 @@ async def add_server(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ip = context.args[2]
     puerto = 9
 
-    if obtener_servidor(nombre):
+    if await obtener_servidor_async(nombre):
         await update.message.reply_text(f"El servidor '{nombre}' ya existe.")
         return
 
-    agregar_servidor(nombre, mac, ip, puerto)
+    await agregar_servidor_async(nombre, mac, ip, puerto)
     await update.message.reply_text(f"Servidor '{nombre}' agregado.")
-    registrar_log(update.effective_user.id, "/add", f"{nombre} {mac} {ip} {puerto}")
+    await registrar_log_async(update.effective_user.id, "/add", f"{nombre} {mac} {ip} {puerto}")
 
 
 @authorized_only(min_rol="admin")
@@ -44,13 +44,13 @@ async def remove_server(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     nombre = " ".join(context.args)
-    if not obtener_servidor(nombre):
+    if not await obtener_servidor_async(nombre):
         await update.message.reply_text(f"Servidor '{nombre}' no encontrado.")
         return
 
-    eliminar_servidor(nombre)
+    await eliminar_servidor_async(nombre)
     await update.message.reply_text(f"Servidor '{nombre}' eliminado.")
-    registrar_log(update.effective_user.id, "/remove", nombre)
+    await registrar_log_async(update.effective_user.id, "/remove", nombre)
 
 
 @authorized_only(min_rol="admin")
@@ -67,13 +67,13 @@ async def add_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = int(parts[0])
     rol = parts[1] if len(parts) >= 2 and parts[1] in ("admin", "user") else "user"
 
-    if obtener_usuario(user_id):
-        actualizar_rol_usuario(user_id, rol)
+    if await obtener_usuario_async(user_id):
+        await actualizar_rol_usuario_async(user_id, rol)
     else:
-        registrar_usuario(user_id, rol=rol)
+        await registrar_usuario_async(user_id, rol=rol)
 
     await update.message.reply_text(f"Usuario {user_id} configurado como {rol}.")
-    registrar_log(update.effective_user.id, "/adduser", f"{user_id}:{rol}")
+    await registrar_log_async(update.effective_user.id, "/adduser", f"{user_id}:{rol}")
 
 
 @authorized_only(min_rol="admin")
@@ -87,10 +87,10 @@ async def remove_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     user_id = int(context.args[0])
-    if not obtener_usuario(user_id):
+    if not await obtener_usuario_async(user_id):
         await update.message.reply_text(f"Usuario {user_id} no encontrado.")
         return
 
-    eliminar_usuario(user_id)
+    await eliminar_usuario_async(user_id)
     await update.message.reply_text(f"Usuario {user_id} eliminado.")
-    registrar_log(update.effective_user.id, "/removeuser", str(user_id))
+    await registrar_log_async(update.effective_user.id, "/removeuser", str(user_id))

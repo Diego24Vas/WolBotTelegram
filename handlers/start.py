@@ -5,8 +5,8 @@ from handlers.auth import authorized_only
 
 @authorized_only()
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    from database.repository import obtener_usuario
-    user = obtener_usuario(update.effective_user.id)
+    from database.repository import obtener_usuario_async
+    user = await obtener_usuario_async(update.effective_user.id)
     rol = user.get("rol", "user") if user else "user"
 
     base_text = (

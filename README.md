@@ -35,6 +35,10 @@ El bot arranca sin usuarios registrados. Ejecutá este script para agregarte com
 
 ```bash
 python scripts/add_admin.py
+
+
+# Si ya has iniciado docker se ocupa esre comando 
+docker compose run --rm bot python scripts/add_admin.py
 ```
 
 Te pedirá tu **ID de Telegram** (lo obtenés de [@userinfobot](https://t.me/userinfobot)) y opcionalmente un username.

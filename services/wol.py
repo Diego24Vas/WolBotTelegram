@@ -1,3 +1,4 @@
+import asyncio
 import socket
 from utils.helpers import format_mac
 
@@ -7,7 +8,7 @@ def _subnet_broadcast(ip: str) -> str | None:
         return ".".join(parts[:3] + ["255"])
     return None
 
-def send_wol(mac: str, server_ip: str = "", port: int = 9) -> bool:
+def _send_wol_sync(mac: str, server_ip: str = "", port: int = 9) -> bool:
     try:
         mac_bytes = bytes.fromhex(format_mac(mac).replace(":", ""))
         if len(mac_bytes) != 6:
@@ -31,3 +32,6 @@ def send_wol(mac: str, server_ip: str = "", port: int = 9) -> bool:
         return True
     except Exception:
         return False
+
+async def send_wol(mac: str, server_ip: str = "", port: int = 9) -> bool:
+    return await asyncio.to_thread(_send_wol_sync, mac, server_ip, port)
