@@ -5,6 +5,7 @@ from telegram.ext import Application, CommandHandler
 from config import settings
 from database.db import init_db, checkpoint
 from handlers.start import start
+from handlers.version import version
 from handlers.servers import servers_list, server_status, server_wake
 from handlers.admin import add_server, remove_server, add_user, remove_user, list_users, server_info
 
@@ -61,6 +62,7 @@ def main():
     app.add_handler(CommandHandler("removeuser", remove_user))
     app.add_handler(CommandHandler("users", list_users))
     app.add_handler(CommandHandler("info", server_info))
+    app.add_handler(CommandHandler("version", version))
 
     logger.info("Bot iniciado...")
     app.run_polling(allowed_updates=["message"])
