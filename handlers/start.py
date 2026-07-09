@@ -21,7 +21,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "/add <nombre> <MAC> <IP> - Agregar servidor\n"
         "/remove <nombre> - Eliminar servidor\n"
         "/info <nombre> - Ver datos del servidor\n"
-        "/adduser <user_id>:<rol> - Agregar/modificar usuario\n"
+        "/adduser <user_id> <nombre> [rol] - Agregar/modificar usuario\n"
+        "/users - Listar usuarios\n"
         "/removeuser <user_id> - Eliminar usuario\n"
     )
 

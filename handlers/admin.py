@@ -55,25 +55,25 @@ async def remove_server(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 @authorized_only(min_rol="admin")
 async def add_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not context.args:
-        await update.message.reply_text("Uso: /adduser <user_id>:<rol>")
+    if len(context.args) < 2:
+        await update.message.reply_text("Uso: /adduser <user_id> <nombre> [rol]\nEj: /adduser 123456789 Juan admin")
         return
 
-    parts = context.args[0].split(":")
-    if len(parts) < 1 or not parts[0].isdigit():
-        await update.message.reply_text("Formato inválido. Uso: /adduser <user_id>:<rol>")
+    if not context.args[0].isdigit():
+        await update.message.reply_text("El user_id debe ser numérico.\nUso: /adduser <user_id> <nombre> [rol]")
         return
 
-    user_id = int(parts[0])
-    rol = parts[1] if len(parts) >= 2 and parts[1] in ("admin", "user") else "user"
+    user_id = int(context.args[0])
+    username = context.args[1]
+    rol = context.args[2] if len(context.args) >= 3 and context.args[2] in ("admin", "user") else "user"
 
     if await obtener_usuario_async(user_id):
         await actualizar_rol_usuario_async(user_id, rol)
     else:
-        await registrar_usuario_async(user_id, rol=rol)
+        await registrar_usuario_async(user_id, username=username, rol=rol)
 
-    await update.message.reply_text(f"Usuario {user_id} configurado como {rol}.")
-    await registrar_log_async(update.effective_user.id, "/adduser", f"{user_id}:{rol}")
+    await update.message.reply_text(f"Usuario {user_id} ({username}) configurado como {rol}.")
+    await registrar_log_async(update.effective_user.id, "/adduser", f"{user_id} {username} {rol}")
 
 
 @authorized_only(min_rol="admin")
@@ -94,6 +94,21 @@ async def remove_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await eliminar_usuario_async(user_id)
     await update.message.reply_text(f"Usuario {user_id} eliminado.")
     await registrar_log_async(update.effective_user.id, "/removeuser", str(user_id))
+
+
+@authorized_only(min_rol="admin")
+async def list_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    users = await listar_usuarios_async()
+    if not users:
+        await update.message.reply_text("No hay usuarios registrados.")
+        return
+
+    lines = [
+        f"ID: {u['id']} | Usuario: {u['username'] or 'N/A'} | Rol: {u['rol']}"
+        for u in users
+    ]
+    await update.message.reply_text("Usuarios registrados:\n\n" + "\n".join(lines))
+    await registrar_log_async(update.effective_user.id, "/users", None)
 
 
 @authorized_only(min_rol="admin")
