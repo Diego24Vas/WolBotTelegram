@@ -1,4 +1,4 @@
-# Wake-on-LAN Telegram Bot
+# Wol Telegram Bot
 
 Bot de Telegram para encender servidores remotamente mediante mensajes. Con base de datos SQLite, sistema de roles (admin/user), y gestión de servidores desde el chat.
 
@@ -6,7 +6,7 @@ Bot de Telegram para encender servidores remotamente mediante mensajes. Con base
 
 ## Requisitos
 
-- Python 3.8+ o Docker
+- Docker
 - Token de bot de Telegram (de [@BotFather](https://t.me/BotFather))
 
 ---
@@ -18,7 +18,7 @@ Bot de Telegram para encender servidores remotamente mediante mensajes. Con base
 ```bash
 # Clonar el proyecto
 git clone <repo> wakeOnLanBot
-cd wakeOnLanBot
+cd WolBotTelegram
 
 # Crear archivo .env con tu token
 echo "BOT_TOKEN=tu_token_de_botfather" > .env
@@ -36,8 +36,7 @@ El bot arranca sin usuarios registrados. Ejecutá este script para agregarte com
 ```bash
 python scripts/add_admin.py
 
-
-# Si ya has iniciado docker se ocupa esre comando 
+# Si ya has iniciado docker se ocupa este comando 
 docker compose run --rm bot python scripts/add_admin.py
 ```
 

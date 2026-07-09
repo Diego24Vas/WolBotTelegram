@@ -1,8 +1,9 @@
+import asyncio
 import logging
 from telegram.ext import Application, CommandHandler
 
 from config import settings
-from database.db import init_db
+from database.db import init_db, checkpoint
 from handlers.start import start
 from handlers.servers import servers_list, server_status, server_wake
 from handlers.admin import add_server, remove_server, add_user, remove_user, server_info
@@ -22,10 +23,31 @@ async def error_handler(update, context):
         )
 
 
+async def periodic_checkpoint():
+    while True:
+        await asyncio.sleep(300)
+        try:
+            await checkpoint()
+            logger.debug("WAL checkpoint completado")
+        except Exception as e:
+            logger.warning("Error en WAL checkpoint: %s", e)
+
+
+async def post_init(app):
+    app.create_task(periodic_checkpoint())
+
+
 def main():
     init_db()
 
-    app = Application.builder().token(settings.BOT_TOKEN).build()
+    app = (
+        Application.builder()
+        .token(settings.BOT_TOKEN)
+        .read_timeout(30)
+        .get_updates_read_timeout(30)
+        .post_init(post_init)
+        .build()
+    )
 
     app.add_error_handler(error_handler)
 

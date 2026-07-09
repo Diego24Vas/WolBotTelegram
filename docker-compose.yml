@@ -3,6 +3,7 @@ services:
     build: .
     container_name: wol-bot
     restart: always
+    network_mode: host
     env_file: .env
     cap_add:
       - NET_RAW
