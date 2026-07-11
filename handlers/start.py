@@ -1,6 +1,7 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 from handlers.auth import authorized_only
+from handlers.keyboards import main_menu
 
 
 @authorized_only()
@@ -27,6 +28,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
     if rol == "admin":
-        await update.message.reply_text(base_text + "\nComandos de administración:\n" + admin_text)
+        await update.message.reply_text(
+            base_text + "\nComandos de administración:\n" + admin_text,
+            reply_markup=main_menu(rol),
+        )
     else:
-        await update.message.reply_text(base_text)
+        await update.message.reply_text(base_text, reply_markup=main_menu(rol))
